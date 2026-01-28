@@ -15,6 +15,17 @@ A real-time data pipeline designed to ingest unstructured news data via REST API
 3. **Inference Layer:** Utilizes a pre-trained Lexicon-based model to assign sentiment polarity scores (-1.0 to +1.0).
 4. **Classification:** Maps polarity scores to categorical labels (Positive, Negative, Neutral) for business reporting.
 
+## Data Dictionary (Output Schema)
+The final `news_sentiment_report.csv` contains the following fields:
+
+| Column | Description | Data Type |
+| :--- | :--- | :--- |
+| **Title** | The headline of the news article. | String |
+| **Publisher** | The news outlet that published the story (e.g., BBC, CNBC). | String |
+| **Sentiment** | Categorical label based on polarity score (Positive/Negative/Neutral). | String |
+| **Score** | Numerical polarity value ranging from -1.0 to 1.0. | Float |
+| **Link** | Direct URL to the original article source. | URL |
+
 ## Key Technical Challenges Overcome
 * **API Authentication:** Implemented secure credential management using `.env` files to prevent exposure of sensitive keys in version control.
 * **Resilience:** Built-in error handling for API status codes (e.g., 401 Unauthorized, 429 Rate Limiting).

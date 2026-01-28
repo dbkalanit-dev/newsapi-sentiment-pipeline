@@ -20,27 +20,27 @@ def analyze_news_to_csv(query="Artificial Intelligence"):
 
         for art in articles[:10]:
             title = art['title']
+            publisher = art['source']['name'] # Accessing the nested 'source' name
+            link = art['url'] # The direct URL
+            
             analysis = TextBlob(title)
             score = analysis.sentiment.polarity
             
-            # Classification logic
-            if score > 0:
-                label = "Positive"
-            elif score < 0:
-                label = "Negative"
-            else:
-                label = "Neutral"
+            # Classification
+            label = "Positive" if score > 0 else "Negative" if score < 0 else "Neutral"
             
-            # Store the data in a "Row" format
+            # Now we add the new fields to our dictionary
             processed_data.append({
                 "title": title,
+                "publisher": publisher,
+                "link": link,
                 "sentiment": label,
                 "score": round(score, 2)
             })
 
-        # --- EXPORT STEP ---
+        # Update the CSV keys to include the new columns
         filename = "news_sentiment_report.csv"
-        keys = ["title", "sentiment", "score"]
+        keys = ["title", "publisher", "sentiment", "score", "link"] # Added new keys
         
         with open(filename, "w", newline='', encoding='utf-8') as f:
             writer = csv.DictWriter(f, fieldnames=keys)
