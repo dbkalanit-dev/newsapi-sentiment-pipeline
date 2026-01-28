@@ -3,11 +3,15 @@
 ## Project Overview
 A real-time data pipeline designed to ingest unstructured news data via REST API and perform NLP-based sentiment analysis. This project demonstrates a production-ready approach to handling live data streams and automated insights generation.
 
-## The Tech Stack
-* **Language:** Python 3.9+
-* **Ingestion:** NewsAPI (RESTful API)
-* **NLP Engine:** TextBlob (Natural Language Processing)
-* **Environment Management:** Python-Dotenv (Security/Secrets Management)
+## Technical Stack Update (v2.0)
+- **Sentiment Engine:** Switched from `TextBlob` to `VADER` (Valence Aware Dictionary and sEntiment Reasoner) to better handle contextual negations and technical jargon.
+- **Encoding:** Implemented `utf-8-sig` export to ensure cross-platform compatibility with Microsoft Excel's character rendering.
+- **Data Enrichment:** Added Publisher names and Source URLs for full data traceability.
+
+## Model Tuning
+To improve accuracy for technical news, the VADER lexicon was custom-tuned:
+- **Positive Weights:** "OLED", "HDR", "Efficiency", "Illegal" (when referring to harmful content).
+- **Negative Weights:** "Deepfakes", "Vulnerability".
 
 ## System Architecture
 1. **Ingestion Layer:** Connects to NewsAPI to fetch headlines based on specific keyword queries.
