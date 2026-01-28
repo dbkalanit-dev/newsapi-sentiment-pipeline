@@ -1,41 +1,55 @@
 import os
 import requests
+import csv
 from textblob import TextBlob
-from dotenv import load_dotenv # Import the environment loader
+from dotenv import load_dotenv
 
-# This finds the .env file and loads the variables
+# Load security layer
 load_dotenv()
+API_KEY = os.getenv("NEWS_API_KEY")
 
-# Instead of the plain text key, we pull from the environment
-API_KEY = os.getenv("NEWS_API_KEY") 
-
-
-def analyze_news(query="technology"):
+def analyze_news_to_csv(query="Artificial Intelligence"):
     url = f"https://newsapi.org/v2/everything?q={query}&apiKey={API_KEY}"
     response = requests.get(url)
     
     if response.status_code == 200:
         articles = response.json().get('articles', [])
+        processed_data = [] # Our collection bucket
         
-        print(f"--- Sentiment Analysis for '{query}' ---")
-        
-        for art in articles[:5]:  # Let's look at the first 5
-            title = art['title']
-            
-            # This is the ML part!
-            analysis = TextBlob(title)
-            score = analysis.sentiment.polarity # Returns a number between -1 and 1
-            
-            # Categorize the score
-            if score > 0:
-                sentiment = "POSITIVE"
-            elif score < 0:
-                sentiment = "NEGATIVE"
-            else:
-                sentiment = "NEUTRAL"
-            
-            print(f"[{sentiment}] Score: {score:.2f} | {title}")
-    else:
-        print("Error fetching data.")
+        print(f"Analyzing {len(articles[:10])} headlines...")
 
-analyze_news("Apple")
+        for art in articles[:10]:
+            title = art['title']
+            analysis = TextBlob(title)
+            score = analysis.sentiment.polarity
+            
+            # Classification logic
+            if score > 0:
+                label = "Positive"
+            elif score < 0:
+                label = "Negative"
+            else:
+                label = "Neutral"
+            
+            # Store the data in a "Row" format
+            processed_data.append({
+                "title": title,
+                "sentiment": label,
+                "score": round(score, 2)
+            })
+
+        # --- EXPORT STEP ---
+        filename = "news_sentiment_report.csv"
+        keys = ["title", "sentiment", "score"]
+        
+        with open(filename, "w", newline='', encoding='utf-8') as f:
+            writer = csv.DictWriter(f, fieldnames=keys)
+            writer.writeheader()
+            writer.writerows(processed_data)
+            
+        print(f"Done! Report saved as {filename}")
+    else:
+        print(f"Error: {response.status_code}")
+
+# Run the full pipeline
+analyze_news_to_csv("Technology")
