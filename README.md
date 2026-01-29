@@ -1,42 +1,73 @@
-# News Sentiment Analysis Pipeline
+# 📊 AI Sentiment Analysis Sandbox
+**A prototype for exploring how AI-driven insights can be visualized and governed in a guided user experience.**
 
-## Project Overview
-A real-time data pipeline designed to ingest unstructured news data via REST API and perform NLP-based sentiment analysis. This project demonstrates a production-ready approach to handling live data streams and automated insights generation.
+<img src="NewSentimentDB_V1.png" width="600" alt="Dashboard Preview">
 
-## Technical Stack Update (v2.0)
-- **Sentiment Engine:** Switched from `TextBlob` to `VADER` (Valence Aware Dictionary and sEntiment Reasoner) to better handle contextual negations and technical jargon.
-- **Encoding:** Implemented `utf-8-sig` export to ensure cross-platform compatibility with Microsoft Excel's character rendering.
-- **Data Enrichment:** Added Publisher names and Source URLs for full data traceability.
+## 🎯 Project Overview
+This project is a personal "Zero-to-One" build designed to bridge the gap between raw, unstructured news data and actionable business intelligence. 
 
-## Model Tuning
-To improve accuracy for technical news, the VADER lexicon was custom-tuned:
-- **Positive Weights:** "OLED", "HDR", "Efficiency", "Illegal" (when referring to harmful content).
-- **Negative Weights:** "Deepfakes", "Vulnerability".
+As a Product Manager, I built this to explore the challenges of:
+* **Data Orchestration:** Automating ingestion of real-time data from the NewsAPI.
+* **Sentiment Modeling:** Leveraging VADER for lightweight, rule-based NLP to drive decision-making.
+* **Guided UX:** Building a Streamlit interface that translates complex scores into a "Market Vibe" for executive visibility.
 
-## System Architecture
-1. **Ingestion Layer:** Connects to NewsAPI to fetch headlines based on specific keyword queries.
-2. **Preprocessing:** Cleans strings and prepares text for inference.
-3. **Inference Layer:** Utilizes a pre-trained Lexicon-based model to assign sentiment polarity scores (-1.0 to +1.0).
-4. **Classification:** Maps polarity scores to categorical labels (Positive, Negative, Neutral) for business reporting.
+## 🛠️ Tech Stack 
+* **Ingestion:** Python / NewsAPI
+* **NLP Engine:** VADER Sentiment Analysis
+* **Product UI:** Streamlit (v1.0 Prototyping)
 
-## Data Dictionary (Output Schema)
-The final `news_sentiment_report.csv` contains the following fields:
+## 🚀 Key Product Features
+* **Automated Pipeline:** Real-time fetching and scoring for immediate sentiment monitoring.
+* **Data Integrity & Resilience:** Built-in handling for missing fields, rate-limiting, and error-state messaging.
+* **Scalability:** Modular architecture designed to allow for swapping the NLP engine (e.g., to GPT-4) with minimal refactoring.
+
+## 🧠 Model Governance & Tuning
+To ensure data integrity and accuracy within a technical news context, I custom-tuned the VADER lexicon to reflect business-specific nuances:
+* **Contextual Weighting:** Adjusted weights for terms like "Efficiency" and "OLED" (Positive) vs. "Vulnerability" and "Deepfakes" (Negative).
+* **Noise Reduction:** Implemented filters to exclude articles with insufficient metadata to maintain a high-quality "Source of Truth."
+
+## 🏗️ System Architecture
+1.  **Ingestion Layer:** Connects to NewsAPI to fetch headlines based on specific keyword queries.
+2.  **Preprocessing:** Cleans strings and prepares text for inference.
+3.  **Inference Layer:** Utilizes a pre-trained Lexicon-based model to assign sentiment polarity scores (-1.0 to +1.0).
+4.  **Classification Layer:** Maps polarity scores to categorical labels (Positive, Negative, Neutral) for standardized business reporting.
+
+## 📖 Data Dictionary (Output Schema)
+The system produces a refined `news_sentiment_report.csv` designed for downstream analytics:
 
 | Column | Description | Data Type |
 | :--- | :--- | :--- |
 | **Title** | The headline of the news article. | String |
-| **Publisher** | The news outlet that published the story (e.g., BBC, CNBC). | String |
-| **Sentiment** | Categorical label based on polarity score (Positive/Negative/Neutral). | String |
-| **Score** | Numerical polarity value ranging from -1.0 to 1.0. | Float |
+| **Publisher** | The news outlet source (e.g., BBC, CNBC). | String |
+| **Sentiment** | Categorical label (Positive/Negative/Neutral). | String |
+| **Score** | Numerical polarity value ($$-1.0$$to$$1.0$$). | Float |
 | **Link** | Direct URL to the original article source. | URL |
 
-## Key Technical Challenges Overcome
-* **API Authentication:** Implemented secure credential management using `.env` files to prevent exposure of sensitive keys in version control.
-* **Resilience:** Built-in error handling for API status codes (e.g., 401 Unauthorized, 429 Rate Limiting).
-* **Environment Configuration:** Managed POSIX file paths and hidden system files in a macOS ZSH environment.
+## 🛡️ Strategic Challenges Overcome
+* **Security & Compliance:** Implemented secure credential management using `.env` files to ensure sensitive API keys remain outside of version control.
+* **Operational Resilience:** Developed robust error handling for API status codes ($$401$$Unauthorized,$$429$$ Rate Limiting) to ensure platform uptime.
+* **Environment Optimization:** Managed complex POSIX file paths and macOS-specific environment configurations for a seamless dev-to-prod transition.
 
-## How to Run
-1. Clone the repo.
-2. Create a `.env` file with your `NEWS_API_KEY`.
-3. Run `pip install -r requirements.txt`.
-4. Execute `python3 live_ingest.py`.
+## 🔮 Future Roadmap
+* **Time-Series Analytics:** Visualizing sentiment shifts over a 30-day rolling window.
+* **Entity Extraction:** Identifying key players (Companies/PE Firms) mentioned within sentiment spikes.
+* **Role-Based Access:** Simulating a "Manager Toolkit" view vs. an "Executive Summary" view.
+
+## 💻 How to Run (Step-by-Step)
+> **Note for Windows Users:** The commands below use `python3` and `pip3` (macOS/Linux standard). If you are on Windows, simply use `python` and `pip` instead.
+### 1. Setup the Project
+* **Clone the repo:** Click the green **Code** button at the top of this page, copy the URL, and run this in your terminal:
+  ```
+  git clone https://github.com/dbkalanit-dev/newsapi-sentiment-pipeline.git 
+  cd newsapi-sentiment-pipeline
+  ```
+* **Install the "Brains":** Copy and paste this into the terminal and hit Enter: ```pip3 install -r requirements.txt```
+### 2. Configure Your API Key
+* Create a new file in your project folder named `.env`.
+* Inside that file, paste your key like this: `NEWS_API_KEY=your_actual_key_here`.
+### 3. Generate the Data (The Backend)
+* Run the ingestion script to fetch and analyze  up to 100 headlines: ```python3 live_ingest.py```
+* Wait for the terminal to say: `Done! Report saved as news_sentiment_report.csv`.
+### 4. Launch the Dashboard (The Frontend)
+* To see the visual report in your browser, run this command: ```python3 -m streamlit run dashboard.py```
+* **Note:** Your browser should open automatically. If it doesn't, click the URL shown in the terminal.
