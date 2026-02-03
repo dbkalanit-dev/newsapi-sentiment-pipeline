@@ -20,7 +20,7 @@ TOPIC = "Artificial Intelligence"
 analyzer = SentimentIntensityAnalyzer()
 
 new_words = {
-    'illegal': 0.5,   # We want 'illegal' to be slightly positive in our context
+    'deal': 0.5,   # We want 'deal' to be slightly positive in our context
     'oled': 0.8,      # Tech wins!
     'easier': 1.0,    # Efficiency wins!
     'deepfakes': -2.0 # Still very bad
