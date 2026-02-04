@@ -43,12 +43,14 @@ def analyze_news_to_csv(query="Technology"):
 
         for art in articles[:LIMIT]:
             title = art['title']
+            description = art.get('description', "") # Get the summary blurb
+            full_text = f"{title} {description}"    # Combine them for context
             publisher = art['source']['name'] # Accessing the nested 'source' name
             link = art['url'] # The direct URL
             
             # --- NLP ANALYSIS (VADER STYLE) ---
             # VADER gives us a 'dictionary' of scores (pos, neg, neu, and compound)
-            vs = analyzer.polarity_scores(title)
+            vs = analyzer.polarity_scores(full_text) # Analyze the combined text
             score = vs['compound'] # Compound is the overall "summary" score
             
             # Classification logic (VADER is more precise, so we keep the same logic)
@@ -61,6 +63,7 @@ def analyze_news_to_csv(query="Technology"):
             
             processed_data.append({
                 "title": title,
+                "description": description,
                 "publisher": publisher,
                 "link": link,
                 "sentiment": label,
@@ -68,7 +71,7 @@ def analyze_news_to_csv(query="Technology"):
             })
 
         filename = "news_sentiment_report.csv"
-        keys = ["title", "publisher", "sentiment", "score", "link"] 
+        keys = ["title", "description", "publisher", "sentiment", "score", "link"] 
         
         with open(filename, "w", newline='', encoding='utf-8-sig') as f:
             writer = csv.DictWriter(f, fieldnames=keys)

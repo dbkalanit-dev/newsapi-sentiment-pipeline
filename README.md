@@ -26,6 +26,12 @@ To ensure data integrity and accuracy within a technical news context, I custom-
 * **Contextual Weighting:** Adjusted weights for terms like "Efficiency" and "OLED" (Positive) vs. "Vulnerability" and "Deepfakes" (Negative).
 * **Noise Reduction:** Implemented filters to exclude articles with insufficient metadata to maintain a high-quality "Source of Truth."
 
+## 🛠️ Technical Iteration: Enhancing Context
+During initial testing, I identified that headlines alone often lacked the nuance required for accurate sentiment scoring.
+
+* **The Solution:** I refactored the ingestion engine to merge the title and description fields into a single text blob for the NLP engine.
+* **The Result:** This increased the model's contextual awareness, significantly reducing misclassifications for complex or nuanced topics.
+
 ## 🏗️ System Architecture
 1.  **Ingestion Layer:** Connects to NewsAPI to fetch headlines based on specific keyword queries.
 2.  **Preprocessing:** Cleans strings and prepares text for inference.
@@ -38,10 +44,11 @@ The system produces a refined `news_sentiment_report.csv` designed for downstrea
 | Column | Description | Data Type |
 | :--- | :--- | :--- |
 | **Title** | The headline of the news article. | String |
+| **Description** |	A summary blurb used to provide expanded context for NLP analysis. | String |
 | **Publisher** | The news outlet source (e.g., BBC, CNBC). | String |
 | **Sentiment** | Categorical label (Positive/Negative/Neutral). | String |
 | **Score** | Numerical polarity value ($$-1.0$$to$$1.0$$). | Float |
-| **Link** | Direct URL to the original article source. | URL |
+| **Link** | Direct URL to the source, rendered as a clickable link in the UI. | URL |
 
 ## 🛡️ Strategic Challenges Overcome
 * **Security & Compliance:** Implemented secure credential management using `.env` files to ensure sensitive API keys remain outside of version control.
@@ -57,7 +64,7 @@ The system produces a refined `news_sentiment_report.csv` designed for downstrea
 > **Note for Windows Users:** The commands below use `python3` and `pip3` (macOS/Linux standard). If you are on Windows, simply use `python` and `pip` instead.
 ### 1. Setup the Project
 * **Clone the repo:** Click the green **Code** button at the top of this page, copy the URL, and run this in your terminal:
-  ```
+  ```bash
   git clone https://github.com/dbkalanit-dev/newsapi-sentiment-pipeline.git 
   cd newsapi-sentiment-pipeline
   ```

@@ -13,26 +13,35 @@ try:
     
     # 3. Sidebar Metrics
     st.sidebar.header("Data Summary")
-    total_articles = len(df)
-    st.sidebar.metric("Total Articles", total_articles)
+    st.sidebar.metric("Total Articles", len(df))
+    st.sidebar.write("Project: AI Sentiment Sandbox")
 
     # 4. Visualization: Sentiment Distribution
     st.subheader("Sentiment Breakdown")
     sentiment_counts = df['sentiment'].value_counts()
     
-    # Create a columns layout
-    col1, col2 = st.columns([1, 2])
-    
-    with col1:
-        st.write("Raw Counts:")
-        st.dataframe(sentiment_counts)
-        
-    with col2:
-        st.bar_chart(sentiment_counts)
+    # Create a simple bar chart for quick executive summary
+    st.bar_chart(sentiment_counts)
 
-    # 5. Searchable Data Table
-    st.subheader("Latest Headlines")
-    st.dataframe(df[['title', 'publisher', 'sentiment', 'score', 'link']])
+    # 5. Searchable Data Table with Clickable Links
+    st.subheader("Latest Headlines & Context")
+    
+    st.dataframe(
+        df,
+        column_config={
+            "link": st.column_config.LinkColumn(
+                "Source Link",     # Label for the user
+                help="Click to read the full article",
+                validate="^https://",
+            ),
+            "score": st.column_config.NumberColumn(
+                "Sentiment Score",
+                format="%.2f",     # Rounds to 2 decimal places in the UI
+            )
+        },
+        hide_index=True,
+        use_container_width=True # Makes the table fill the screen nicely
+    )
 
 except FileNotFoundError:
     st.error("CSV file not found. Please run 'python3 live_ingest.py' first!")
