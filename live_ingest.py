@@ -1,33 +1,20 @@
-"""
-PROJECT: Real-Time News Sentiment Pipeline
-AUTHOR: Deborah Kalanit
-VERSION: 2.0 (VADER NLP + Excel-Optimized Export)
-DESCRIPTION: 
-    Ingests live headlines via NewsAPI, performs contextual 
-    sentiment analysis using VADER, and exports an enriched 
-    CSV report with metadata for stakeholders.
-"""
 import os
 import requests
-import csv
+import pandas as pd
+from datetime import datetime
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 from dotenv import load_dotenv
 
 # --- CONFIGURATION SETTINGS ---
-LIMIT = 100  # Change this one number to scale your whole project!
+LIMIT = 100 
 TOPIC = "Artificial Intelligence"
+FILENAME = "news_sentiment_report.csv"
 
 analyzer = SentimentIntensityAnalyzer()
-
-new_words = {
-    'deal': 0.5,   # We want 'deal' to be slightly positive in our context
-    'oled': 0.8,      # Tech wins!
-    'easier': 1.0,    # Efficiency wins!
-    'deepfakes': -2.0 # Still very bad
-}
+# Custom lexicon tuning remains the same
+new_words = {'deal': 0.5, 'oled': 0.8, 'easier': 1.0, 'deepfakes': -2.0}
 analyzer.lexicon.update(new_words)
 
-# Load security layer
 load_dotenv()
 API_KEY = os.getenv("NEWS_API_KEY")
 
@@ -39,21 +26,19 @@ def analyze_news_to_csv(query="Technology"):
         articles = response.json().get('articles', [])
         processed_data = [] 
         
+        # New: Capture the ingestion timestamp
+        ingest_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
         print(f"Analyzing {len(articles[:LIMIT])} headlines...")
 
         for art in articles[:LIMIT]:
             title = art['title']
-            description = art.get('description', "") # Get the summary blurb
-            full_text = f"{title} {description}"    # Combine them for context
-            publisher = art['source']['name'] # Accessing the nested 'source' name
-            link = art['url'] # The direct URL
+            description = art.get('description', "")
+            full_text = f"{title} {description}"
             
-            # --- NLP ANALYSIS (VADER STYLE) ---
-            # VADER gives us a 'dictionary' of scores (pos, neg, neu, and compound)
-            vs = analyzer.polarity_scores(full_text) # Analyze the combined text
-            score = vs['compound'] # Compound is the overall "summary" score
+            vs = analyzer.polarity_scores(full_text)
+            score = vs['compound']
             
-            # Classification logic (VADER is more precise, so we keep the same logic)
             if score >= 0.05:
                 label = "Positive"
             elif score <= -0.05:
@@ -61,26 +46,31 @@ def analyze_news_to_csv(query="Technology"):
             else:
                 label = "Neutral"
             
+            # Updated Data Dictionary with Date Stamps and Status
             processed_data.append({
+                "status": "🤖 Auto",
+                "date_published": art['publishedAt'], # Timestamp from NewsAPI
+                "date_added": ingest_time,             # Internal ingestion time
                 "title": title,
                 "description": description,
-                "publisher": publisher,
-                "link": link,
+                "publisher": art['source']['name'],
+                "link": art['url'],
                 "sentiment": label,
                 "score": round(score, 2)
             })
 
-        filename = "news_sentiment_report.csv"
-        keys = ["title", "description", "publisher", "sentiment", "score", "link"] 
+        new_df = pd.DataFrame(processed_data)
         
-        with open(filename, "w", newline='', encoding='utf-8-sig') as f:
-            writer = csv.DictWriter(f, fieldnames=keys)
-            writer.writeheader()
-            writer.writerows(processed_data)
+        # New: Append logic to prevent overwriting historical data
+        if not os.path.isfile(FILENAME):
+            new_df.to_csv(FILENAME, index=False, encoding='utf-8-sig')
+            print(f"Created new historical record: {FILENAME}")
+        else:
+            new_df.to_csv(FILENAME, mode='a', index=False, header=False, encoding='utf-8-sig')
+            print(f"Appended {len(new_df)} records to {FILENAME}")
             
-        print(f"Done! Report saved as {filename}")
     else:
         print(f"Error: {response.status_code}")
 
-# Run the full pipeline
-analyze_news_to_csv(TOPIC)
+if __name__ == "__main__":
+    analyze_news_to_csv(TOPIC)
