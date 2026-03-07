@@ -1,0 +1,6 @@
+.env
+.Rhistory
+.DS_Store
+pycache/
+*.pyc
+test_pipeline.py

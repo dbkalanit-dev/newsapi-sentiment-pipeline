@@ -12,8 +12,11 @@ As a Product Manager, I built this to explore:
 * **Advanced Streamlit UX:** Utilizing session state and event-selection to create a professional auditing interface.
 * **Longitudinal Analysis:** Tracking sentiment drift over time to identify shifting market perceptions. 
 
+<<<<<<< HEAD
 For a detailed history of updates and improvements, see the [CHANGELOG.md](CHANGELOG.md).
 
+=======
+>>>>>>> 8c141cc90f4c6f4fecbe62ea3972d00dc63929e9
 ## 🛠️ Tech Stack 
 * **Ingestion:** Python / NewsAPI
 * **NLP Engine:** VADER Sentiment Analysis (Lexicon-based)
