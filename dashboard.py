@@ -12,7 +12,9 @@ if 'audit_data' not in st.session_state:
 
         # Convert strings to datetime objects for accurate plotting
         df['date_added'] = pd.to_datetime(df['date_added'])
-        df['date_published'] = pd.to_datetime(df['date_published'])
+        df['date_published'] = pd.to_datetime(df['date_published'], format='ISO8601', errors='coerce')
+        df['date_published'] = df['date_published'].dt.tz_convert('UTC')
+        df = df.sort_values(by='date_published', ascending=False)
 
         # De-duplicate: Keep only the LATEST version of an article by title
         df = df.sort_values('date_added', ascending=False).drop_duplicates('title')
@@ -25,13 +27,51 @@ if 'audit_data' not in st.session_state:
         st.error("Please run live_ingest.py first!")
         st.stop()
 
-# --- 2. DEFINE FILTERED DATA FIRST ---
+# --- 2. GLOBAL FILTERS ---
 st.sidebar.header("🎯 Global Filters")
+
+# 1. Sentiment Filter
 sentiment_options = st.session_state.audit_data['sentiment'].unique().tolist()
 selected_sentiments = st.sidebar.multiselect("View Sentiments:", sentiment_options, default=sentiment_options)
 
-# Global filtered variable for the rest of the script
-filtered_display = st.session_state.audit_data[st.session_state.audit_data['sentiment'].isin(selected_sentiments)]
+# 2. Search Filter
+search_term = st.sidebar.text_input("🔍 Search Dashboard:", "")
+
+# 3. Date Range Filter
+# We default to showing everything (using min/max of the data) or None to force selection
+min_date = st.session_state.audit_data['date_published'].min().date()
+max_date = st.session_state.audit_data['date_published'].max().date()
+
+date_range = st.sidebar.date_input(
+    "📅 Date Published:",
+    value=(min_date, max_date),
+    min_value=min_date,
+    max_value=max_date
+)
+
+# --- APPLY FILTERS ---
+# Create a fresh copy
+filtered_display = st.session_state.audit_data.copy()
+
+# Filter by Sentiment
+filtered_display = filtered_display[filtered_display['sentiment'].isin(selected_sentiments)]
+
+# Filter by Search
+if search_term:
+    search_mask = (
+        filtered_display['title'].astype(str).str.contains(search_term, case=False, na='') |
+        filtered_display['description'].astype(str).str.contains(search_term, case=False, na='') |
+        filtered_display['publisher'].astype(str).str.contains(search_term, case=False, na='')
+    )
+    filtered_display = filtered_display[search_mask]
+
+# Filter by Date
+if isinstance(date_range, tuple) and len(date_range) == 2:
+    start_date, end_date = date_range
+    # Ensure we are comparing dates correctly
+    mask_date = (filtered_display['date_published'].dt.date >= start_date) & \
+                (filtered_display['date_published'].dt.date <= end_date)
+    filtered_display = filtered_display[mask_date]
 
 # --- 3. THE "CHALLENGE" LOGIC (SIDEBAR EDITOR) ---
 st.sidebar.markdown("---")
@@ -113,18 +153,16 @@ st.plotly_chart(fig_trend, use_container_width=True)
 
 # --- 7. THE AUDIT TABLE ---
 st.subheader("Article Audit Log")
-display_columns = ["status", "sentiment", "score", "title", "description", "link"]
+display_columns = ["status", "sentiment", "score",'date_published', "title", "description", "publisher", "link"]
+df_display = filtered_display[display_columns].copy()
+df_display['date_published'] = df_display['date_published'].dt.strftime('%Y-%m-%d %H:%M')
 
 st.dataframe(
-    filtered_display[display_columns],
+    df_display, 
+    use_container_width=True,
     column_config={
-        "status": st.column_config.TextColumn("Source", width=50),
-        "sentiment": st.column_config.TextColumn("Label", width=75),
-        "score": st.column_config.NumberColumn("Score", format="%.2f", width=50),
-        "title": st.column_config.TextColumn("Headline", width="large"),
-        "description": st.column_config.TextColumn("Context", width="large"),
-        "link": st.column_config.LinkColumn("Link", width=60),
-    },
-    hide_index=True, width="stretch", height=500,
-    on_select="rerun", selection_mode="single-row", key="table_selection"
+        "link": st.column_config.LinkColumn("Link", display_text="Open Article"),
+        "score": st.column_config.NumberColumn("Score", format="%.3f"),
+        "status": st.column_config.TextColumn("Status", help="🤖 = Auto, 👤 = Manual Override")
+    }
 )

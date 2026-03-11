@@ -1,6 +1,23 @@
 # Changelog
 All notable changes to the Sentiment Auditor project are documented in this file.
 
+# [3.1.0] - 2026-03-11
+### Added
+- Global Search & Filter: Replaced local table search with a global dashboard search (Title, Description, Publisher) and Date Range picker for deep investigative analysis.
+
+- Improved Data Resiliency: Implemented robust ISO8601 date parsing with error handling to ensure pipeline stability across varying API formats.
+
+- Enhanced Audit Log: Restored date_published to the Audit Log and enabled interactive LinkColumn rendering for seamless access to source articles.
+
+- Actionable UI Hierarchy: Reordered audit log columns to prioritize operational metrics (Status, Sentiment, Score) before content, creating a more intuitive "Action-to-Context" workflow.
+
+### Fixed
+- State Management: Resolved NameError in table rendering by correcting the order of operations for data manipulation and display.
+
+- Filtering Logic: Refactored global filter logic to ensure UI components dynamically re-render based on search inputs, eliminating "hidden result" bugs.
+
+- Data Integrity: Added data coercion for missing values (NaN/NaT) to prevent runtime crashes during dashboard ingestion.
+
 ## [3.0.0] - 2026-03-06
 ### Added
 - Longitudinal Sentiment Drift: Integrated time-series line charting to visualize sentiment trends.

@@ -1,34 +1,30 @@
 # 📊 AI Sentiment Analysis & Governance Sandbox
-**A Human-in-the-Loop (HITL) platform for visualizing, auditing, and overriding AI-driven sentiment insights.**
+**An end-to-end data pipeline that transforms raw unstructured data into actionable business intelligence with a focus on Human-in-the-Loop (HITL) Governance.**
 
 <img src="NewsSentimentDB_V3.png" width="600" alt="Dashboard Preview">
 
 ## 🎯 Project Overview
-This project is a "Zero-to-One" build designed to bridge the gap between automated NLP and human domain expertise. It moves beyond simple data visualization to provide a **governance layer**, allowing users to challenge and override model predictions in real-time.
+This project bridges the gap between automated NLP scoring and human domain expertise. By implementing a stateful "Auditor Toolbox," this tool enables users to validate, challenge, and override AI-generated sentiment, turning the dashboard into a continuous learning loop for the underlying model.
 
 As a Product Manager, I built this to explore:
-* **Human-in-the-Loop (HITL) Workflows:** Enabling expert intervention to refine model accuracy.
-* **Data Governance:** Implementing a "Source" audit trail to distinguish between AI-generated and human-verified data.
-* **Advanced Streamlit UX:** Utilizing session state and event-selection to create a professional auditing interface.
-* **Longitudinal Analysis:** Tracking sentiment drift over time to identify shifting market perceptions. 
+* **Global Observability:** Unified filtering across all charts and audit logs using sentiment, date range, and keyword search.
+* **HITL Governance:** Built-in override capability allows domain experts to adjust AI scores, with clear "Auto" vs. "Manual" status labeling for full traceability.
+* **Cognitive UX:** Standardized color mapping and optimized information density to support faster executive decision-making.
+* **Data Integrity:** Robust handling of ISO8601 timestamps and multi-layered filtering to ensure "Source of Truth" reliability.
 
-<<<<<<< HEAD
 For a detailed history of updates and improvements, see the [CHANGELOG.md](CHANGELOG.md).
 
-=======
->>>>>>> 8c141cc90f4c6f4fecbe62ea3972d00dc63929e9
-## 🛠️ Tech Stack 
-* **Ingestion:** Python / NewsAPI
-* **NLP Engine:** VADER Sentiment Analysis (Lexicon-based)
-* **Product UI:** Streamlit (v3.0 Strategic Interface)
-* **Visuals:** Plotly Express (Interactive time-series and categorical charting)
+## 🏗️ Tech Stack 
+* **Framework:** Streamlit (Session State management)
+* **Data Handling:** Pandas (Time-series manipulation & filtering)
+* **Visualization:** Plotly (Interactive charts & categorical mapping)
+* **API Ingestion:** NewsAPI with VADER sentiment analysis
 
 ## 🚀 Key Product Features
 * **Interactive Auditing Toolbox:** Click any row in the article log to load it into a sidebar "Challenge" module for real-time overrides.
 * **Longitudinal Trend Tracking:** Visualizes "Sentiment Drift" over time using daily resampling to identify macro-level market shifts.
-
 * **Publisher Bias Analysis:** Categorical breakdown of average sentiment scores by news source to identify reporting patterns and model outliers.
-* **Stateful Filtering:** Real-time sidebar filters update both the interactive Plotly charts and the data table simultaneously.
+* **Global Observability:** Unified filtering (Sentiment, Date Range, and Keyword Search) that updates the entire dashboard state in real-time, providing an investigative lens into the data.
 * **Persistent Storage:** A "Save to CSV" feature allows human overrides to be committed to the master historical dataset.
 
 ## 🏗️ System Architecture
@@ -43,7 +39,7 @@ For a detailed history of updates and improvements, see the [CHANGELOG.md](CHANG
 | :--- | :--- | :--- |
 | **Status** | Indicates if the record is AI-generated (🤖) or Human-verified (👤). | String |
 | **date_published** | Original publication timestamp from the news source (UTC). | ISO-8601 |
-| **date_added** | Internal timestamp of when the record entered our database. | DateTime |
+| **date_added** | Internal timestamp of when the record entered our database. | ISO-8601 |
 | **Title** | The headline of the news article (Text-wrapped). | String |
 | **Description** | Expanded context blurb (Text-wrapped). | String |
 | **Publisher** | The news outlet source for the article. | String | 
@@ -51,9 +47,8 @@ For a detailed history of updates and improvements, see the [CHANGELOG.md](CHANG
 | **Sentiment** | Categorical label (Positive/Negative/Neutral). | String |
 | **Score** | Numerical polarity value (-1.0 to 1.0). | Float |
 
-
 ## 🛡️ Strategic Challenges Overcome
-* **UX Information Density:** Solved "horizontal scroll fatigue" by implementing pixel-perfect column constraints and text-wrapping for long-form content.
+* **UX Information Density:** Solved "horizontal scroll fatigue" by implementing optimized column rendering for long-form content.
 * **State Persistence:** Managed Streamlit’s "rerun" behavior using `st.session_state` to ensure manual edits aren't lost during filtering or navigation.
 * **Empty-State UX:** Integrated "PM Notes" to guide users during initial data collection phases when trend data is insufficient for plotting.
 * **Data Quality & Deduplication:** Implemented a `sort_values` and `drop_duplicates` logic to ensure the dashboard remains clean even as the underlying CSV grows into a massive historical record.
@@ -73,6 +68,7 @@ If you are upgrading from a version older than v3.0, delete your existing `news_
 * **Install Requirements:** Copy and paste this into the terminal and hit Enter: ```pip3 install -r requirements.txt```
 ### 2. Configure Your API Key
 * Create a new file in your project folder named `.env`.
+* Make sure you have a valid NewsAPI key.
 * Inside that file, paste your key like this: `NEWS_API_KEY=your_actual_key_here`.
 ### 3. Generate the Data (The Backend)
 * Run the ingestion script to build your historical record: ```python3 live_ingest.py```
