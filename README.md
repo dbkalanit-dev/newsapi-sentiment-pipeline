@@ -75,3 +75,19 @@ If you are upgrading from a version older than v3.0, delete your existing `news_
 ### 4. Launch the Dashboard (The Frontend)
 * To see the visual report in your browser, run this command: ```python3 -m streamlit run dashboard.py```
 * **Note:** Your browser should open automatically. If it doesn't, click the URL shown in the terminal.
+
+## About the Author
+I am a Senior Product Manager with 12 years of experience within the Salesforce and Tableau ecosystems, specializing in technical product management, data platforms, and B2B SaaS. I’m currently focused on modernizing legacy systems into unified "sources of truth" that prioritize human-centered design and strict data governance.
+
+My current technical focus includes:
+
+* AI Governance: Exploring the practical application of Python-based NLP pipelines and sentiment analysis.
+
+* Data Architecture: Leveraging Databricks Foundations and cloud data architectures to build scalable products.
+
+* Technical Leadership: Applying a "scrappy," high-accountability approach to product development, from Tier 3 technical support to senior leadership.
+
+I am a resident of Camas, WA, a native gardener, and a believer in using data to optimize everything—from enterprise platforms to my daily dog-walking routine.
+
+Connect with me:
+* [LinkedIn](http://linkedin.com/in/deborah-brown-unicorn)
