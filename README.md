@@ -75,6 +75,8 @@ If you are upgrading from a version older than v3.0, delete your existing `news_
 ### 4. Launch the Dashboard (The Frontend)
 * To see the visual report in your browser, run this command: ```python3 -m streamlit run dashboard.py```
 * **Note:** Your browser should open automatically. If it doesn't, click the URL shown in the terminal.
+> **💡 Quick Start (No API Key Required):**
+> If you just want to explore the dashboard features without setting up an API key, the app will automatically load `sample_data.csv` if the live report is missing. Just run the command above to get started immediately.
 
 ## About the Author
 I am a Senior Product Manager with 12 years of experience within the Salesforce and Tableau ecosystems, specializing in technical product management, data platforms, and B2B SaaS. I’m currently focused on modernizing legacy systems into unified "sources of truth" that prioritize human-centered design and strict data governance.
@@ -89,5 +91,4 @@ My current technical focus includes:
 
 I am a resident of Camas, WA, a native gardener, and a believer in using data to optimize everything—from enterprise platforms to my daily dog-walking routine.
 
-Connect with me:
-* [LinkedIn](http://linkedin.com/in/deborah-brown-unicorn)
+Connect with me on [LinkedIn](http://linkedin.com/in/deborah-brown-unicorn)

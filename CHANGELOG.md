@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to the Sentiment Auditor project are documented in this file.
 
+# [3.2.0] - 2026-03-11
+### Added
+- **Governance Visualization:** Introduced a "Verification Rate" donut chart to visualize the ratio of AI-generated vs. Human-verified data points.
+- **Sample Data Fallback:** Implemented a smart-loading sequence that provides a `sample_data.csv` for new users to explore dashboard capabilities immediately without an API key.
+- **Operational UX:** Integrated an interactive row-selection trigger that automatically links the Audit Log to the Sidebar Editor for faster expert overrides.
+
+### Fixed
+- **Selection State Persistence:** Corrected `st.dataframe` configuration to use the proper hyphenated `single-row` selection mode, restoring the ability to challenge AI scores.
+- **Data Pipeline Resiliency:** Added `fillna()` logic to the date processing pipeline to ensure articles with missing publication timestamps do not crash the global date filters.
+- **Sequential Item Numbering:** Default ordering to ascending by index number. 
+
 # [3.1.0] - 2026-03-11
 ### Added
 - Global Search & Filter: Replaced local table search with a global dashboard search (Title, Description, Publisher) and Date Range picker for deep investigative analysis.

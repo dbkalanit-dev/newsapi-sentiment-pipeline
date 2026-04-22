@@ -5,27 +5,38 @@ import plotly.express as px
 st.set_page_config(page_title="NLP Auditor Dashboard", layout="wide")
 
 # --- 1. DATA & STATE MANAGEMENT ---
+def load_data(file_path):
+    df = pd.read_csv(file_path, on_bad_lines='skip') 
+    df['date_added'] = pd.to_datetime(df['date_added'])
+    df['date_published'] = pd.to_datetime(df['date_published'], format='ISO8601', errors='coerce')
+    
+    # Fill missing dates to prevent filter crashes
+    df['date_published'] = df['date_published'].fillna(df['date_added']) 
+    
+    # Sort and Deduplicate
+    df = df.sort_values(by='date_published', ascending=True)
+    df = df.drop_duplicates('title')
+    
+    # Reset Index for clean 1-based "Item Numbers"
+    df = df.reset_index(drop=True)
+    df.index = df.index + 1  
+
+    if 'status' not in df.columns:
+        df['status'] = "🤖 Auto"
+    
+    return df
+
+# Main logic to actually call the function
 if 'audit_data' not in st.session_state:
     try:
-        # Load data with safety for messy lines
-        df = pd.read_csv("news_sentiment_report.csv", on_bad_lines='skip') 
-
-        # Convert strings to datetime objects for accurate plotting
-        df['date_added'] = pd.to_datetime(df['date_added'])
-        df['date_published'] = pd.to_datetime(df['date_published'], format='ISO8601', errors='coerce')
-        df['date_published'] = df['date_published'].dt.tz_convert('UTC')
-        df = df.sort_values(by='date_published', ascending=False)
-
-        # De-duplicate: Keep only the LATEST version of an article by title
-        df = df.sort_values('date_added', ascending=False).drop_duplicates('title')
-        
-        if 'status' not in df.columns:
-            df['status'] = "🤖 Auto"
-            
-        st.session_state.audit_data = df
+        st.session_state.audit_data = load_data("news_sentiment_report.csv")
     except FileNotFoundError:
-        st.error("Please run live_ingest.py first!")
-        st.stop()
+        try:
+            st.session_state.audit_data = load_data("sample_data.csv")
+            st.warning("⚠️ Using **Sample Data**. Run 'live_ingest.py' to collect your own live news.")
+        except FileNotFoundError:
+            st.error("No data found. Please ensure 'sample_data.csv' exists or run 'live_ingest.py'!")
+            st.stop()
 
 # --- 2. GLOBAL FILTERS ---
 st.sidebar.header("🎯 Global Filters")
@@ -132,6 +143,30 @@ fig_pub = px.bar(
 )
 st.plotly_chart(fig_pub, use_container_width=True)
 
+# --- 5.5 GOVERNANCE METRICS: AI ACCURACY ---
+st.subheader("⚖️ Governance: AI Accuracy & Verification")
+
+# Calculate the split between Auto and Manual
+# We use the 'status' column we initialized in Section 1
+gov_counts = filtered_display['status'].value_counts().reset_index()
+gov_counts.columns = ['Source', 'Count']
+
+# Create a donut chart to visualize the "Audit Rate"
+fig_gov = px.pie(
+    gov_counts, 
+    values='Count', 
+    names='Source', 
+    hole=0.5,
+    title="Human-in-the-Loop Verification Rate",
+    color='Source',
+    # Consistent visual encoding: Blue for AI, Orange/Red for Human
+    color_discrete_map={'🤖 Auto': '#3498db', '👤 Manual': '#e67e22'}
+)
+
+# Professional styling to match the rest of the dash
+fig_gov.update_traces(textposition='inside', textinfo='percent+label')
+st.plotly_chart(fig_gov, use_container_width=True)
+
 # --- 6. SENTIMENT DRIFT (WITH EMPTY STATE UX) ---
 st.subheader("📈 Sentiment Drift Over Time")
 
@@ -160,9 +195,13 @@ df_display['date_published'] = df_display['date_published'].dt.strftime('%Y-%m-%
 st.dataframe(
     df_display, 
     use_container_width=True,
+    on_select="rerun", 
+    selection_mode="single-row",
     column_config={
         "link": st.column_config.LinkColumn("Link", display_text="Open Article"),
         "score": st.column_config.NumberColumn("Score", format="%.3f"),
         "status": st.column_config.TextColumn("Status", help="🤖 = Auto, 👤 = Manual Override")
-    }
+    },
+    key="table_selection"
+
 )

@@ -6,8 +6,8 @@
 - [x] Persistent storage of manual audit trails.
 
 ## Phase 2: Data Intelligence (Immediate)
+- [x] **Verification Visibility:** Added real-time tracking of AI-to-Human override ratios (Governance Chart).
 - [ ] **Data Export:** CSV/JSON export for "Gold Standard" datasets to enable future LLM fine-tuning.
-- [ ] **Model Training Integration:** Pipeline to export manual overrides as a curated training set for model fine-tuning.
 - [ ] **Variance Detection:** Add a "Conflict Flag" when Human score and AI score diverge by > 0.5.
 - [ ] **Test Coverage:** Implement unit testing for data parsing and score calculation scripts.
 
