@@ -1,7 +1,7 @@
 # 📊 AI Sentiment Analysis & Governance Sandbox
 **An end-to-end data pipeline that transforms raw unstructured data into actionable business intelligence with a focus on Human-in-the-Loop (HITL) Governance.**
 
-<img src="NewsSentimentDB_V3.png" width="600" alt="Dashboard Preview">
+<img src="NewsSentimentDB_V4.png" width="600" alt="Dashboard Preview">
 
 ## 🎯 Project Overview
 This project bridges the gap between automated NLP scoring and human domain expertise. By implementing a stateful "Auditor Toolbox," this tool enables users to validate, challenge, and override AI-generated sentiment, turning the dashboard into a continuous learning loop for the underlying model.
